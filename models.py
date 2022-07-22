@@ -21,6 +21,12 @@ class Movie(db.Model):
         cascade="all, delete, delete-orphan",
     )
 
+    directors = db.relationship(
+        "Director",
+        backref="movie",
+        cascade="all, delete, delete-orphan",
+    )
+
 
 class Theater(db.Model):
     __tablename__ = "theater"
@@ -40,6 +46,14 @@ class Actor(db.Model):
     actor_rank = db.Column(db.Integer)
 
 
+class Director(db.Model):
+    __tablename__ = "director"
+    director_id = db.Column(db.Integer, primary_key=True)
+    movie_id = db.Column(db.Integer, db.ForeignKey("movie.movie_id"))
+    director_name = db.Column(db.String, nullable=False)
+    director_address = db.Column(db.String(32))
+
+
 class MovieSchema(ma.ModelSchema):
     def __init__(self, **kwargs):
         super().__init__(strict=True, **kwargs)
@@ -49,6 +63,8 @@ class MovieSchema(ma.ModelSchema):
         sqla_session = db.session
 
     theaters = fields.Nested("MovieTheaterSchema", default=[], many=True)
+    actors = fields.Nested("MovieActorSchema", default=[], many=True)
+    directors = fields.Nested("MovieDirectorSchema", default=[], many=True)
 
 
 class MovieTheaterSchema(ma.ModelSchema):
@@ -94,7 +110,49 @@ class ActorSchema(ma.ModelSchema):
     movie = fields.Nested("ActorMovieSchema", default=None)
 
 
+class MovieActorSchema(ma.ModelSchema):
+    def __init__(self, **kwargs):
+        super().__init__(strict=True, **kwargs)
+
+    actor_id = fields.Int()
+    movie_id = fields.Int()
+    actor_name = fields.Str()
+    actor_address = fields.Str()
+    actor_rank = fields.Int()
+
+
 class ActorMovieSchema(ma.ModelSchema):
+    def __init__(self, **kwargs):
+        super().__init__(strict=True, **kwargs)
+
+    movie_id = fields.Int()
+    movie_name = fields.Str()
+    released_year = fields.Str()
+    movie_type = fields.Str()
+
+
+class DirectorSchema(ma.ModelSchema):
+    def __init__(self, **kwargs):
+        super().__init__(strict=True, **kwargs)
+
+    class Meta:
+        model = Director
+        sqla_session = db.session
+
+    movie = fields.Nested("DirectorMovieSchema", default=None)
+
+
+class MovieDirectorSchema(ma.ModelSchema):
+    def __init__(self, **kwargs):
+        super().__init__(strict=True, **kwargs)
+
+    director_id = fields.Int()
+    movie_id = fields.Int()
+    director_name = fields.Str()
+    director_address = fields.Str()
+
+
+class DirectorMovieSchema(ma.ModelSchema):
     def __init__(self, **kwargs):
         super().__init__(strict=True, **kwargs)
 
