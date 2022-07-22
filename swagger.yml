@@ -1,0 +1,411 @@
+swagger: "2.0"
+info:
+  description: This is the swagger file that goes with our server code
+  version: "1.0.0"
+  title: Swagger Rest Article
+consumes:
+  - application/json
+produces:
+  - application/json
+
+basePath: /api
+
+# Paths supported by the server application
+paths:
+  /movies:
+    get:
+      operationId: movie.read_all
+      tags:
+        - Movies
+      summary: Read the entire set of movies
+      description: Read the entire set of movies
+      responses:
+        200:
+          description: Successfully read the list of movies
+          schema:
+            type: array
+            items:
+              properties:
+                movie_id:
+                  type: integer
+                  description: Id of the movie
+                movie_name:
+                  type: string
+                  description: Movie name
+                released_year:
+                  type: string
+                  description: Released year of the movie
+                movie_type:
+                  type: string
+                  description: Type of the movie
+                notes:
+                  type: array
+                  items:
+                    properties:
+                      movie_id:
+                        type: integer
+                        description: Id of the movie
+                      movie_name:
+                        type: string
+                        description: Movie name
+                      released_year:
+                        type: string
+                        description: Released year of the movie
+                      movie_type:
+                        type: string
+                        description: Type of the movie
+
+    post:
+      operationId: movie.create
+      tags:
+        - Movies
+      summary: Create a movie
+      description: Create a new movie
+      parameters:
+        - name: movie
+          in: body
+          description: movie to create
+          required: True
+          schema:
+            type: object
+            properties:
+              movie_name:
+                type: string
+                description: movie name to create
+              released_year:
+                type: string
+                description: released year of the movie
+              movie_type:
+                type: string
+                description: Type of the movie
+      responses:
+        201:
+          description: Successfully created the movie
+          schema:
+            properties:
+              movie_id:
+                type: integer
+                description: Id of the movie
+              movie_name:
+                type: string
+                description: Name of the movie
+              released_year:
+                type: string
+                description: Released year of the movie
+              movie_type:
+                type: string
+                description: Type of the movie
+
+  /movies/{movie_id}:
+    get:
+      operationId: movie.read_one
+      tags:
+        - Movies
+      summary: Read one movie
+      description: Read one movie
+      parameters:
+        - name: movie_id
+          in: path
+          description: Id of the movie to get
+          type: integer
+          required: True
+      responses:
+        200:
+          description: Successfully read the movie
+          schema:
+            type: object
+            properties:
+              person_id:
+                type: string
+                description: Id of the movie
+              movie_name:
+                type: string
+                description: Name of the movie
+              released_year:
+                type: string
+                description: Released year of the movie
+              movie_type:
+                type: string
+                description: Type of the movie
+              theaters:
+                type: array
+                items:
+                  properties:
+                    movie_id:
+                      type: integer
+                      description: Id of the movie that this theater is associated with
+                    theater_id:
+                      type: integer
+                      description: Id of this theater
+                    theater_name:
+                      type: string
+                      description: Name of the theater
+                    theater_type:
+                      type: string
+                      description: Type of the theater
+
+    put:
+      operationId: movie.update
+      tags:
+        - Movies
+      summary: Update a movie
+      description: Update a movie
+      parameters:
+        - name: movie_id
+          in: path
+          description: Id the movie to update
+          type: integer
+          required: True
+        - name: movie
+          in: body
+          schema:
+            type: object
+            properties:
+              movie_name:
+                type: string
+                description: Name of the movie
+              released_year:
+                type: string
+                description: Released year of the movie
+              movie_type:
+                type: string
+                description: Type of the movie
+      responses:
+        200:
+          description: Successfully updated the movie
+          schema:
+            properties:
+              movie_id:
+                type: integer
+                description: Id of the movie that this theater is associated with
+              movie_name:
+                type: string
+                description: Name of the movie
+              released_year:
+                type: string
+                description: Released year of the movie
+              movie_type:
+                type: string
+                description: Type of the movie
+
+    delete:
+      operationId: movie.delete
+      tags:
+        - Movies
+      summary: Delete a movie from the movie list
+      description: Delete a movie
+      parameters:
+        - name: movie_id
+          in: path
+          type: integer
+          description: Id of the movie to delete
+          required: true
+      responses:
+        200:
+          description: Successfully deleted a movie
+
+  /theaters:
+    get:
+      operationId: theater.read_all
+      tags:
+        - Theaters
+      summary: Read the entire set of theaters
+      description: Read the entire set of theaters
+      responses:
+        200:
+          description: Successfully read theaters
+          schema:
+            type: array
+            items:
+              properties:
+                theater_id:
+                  type: integer
+                  description: Id of the theater
+                theater_name:
+                  type: string
+                  description: Name of the theater
+                theater_address:
+                  type: string
+                  description: City of the theater
+                theater_type:
+                  type: string
+                  description: Type of the theater
+                movie:
+                  type: object
+                  properties:
+                    movie_id:
+                      type: integer
+                      description: Id of the movie that this theater is associated with
+                    movie_name:
+                      type: string
+                      description: Name of the movie
+                    released_year:
+                      type: string
+                      description: Released year of the movie
+                    movie_type:
+                      type: string
+                      description: Type of the movie
+
+
+  /movies/{movie_id}/theaters:
+    post:
+      operationId: theater.create
+      tags:
+        - Theaters
+      summary: Create a theater associated with a movie
+      description: Create a theater associated with a movie
+      parameters:
+        - name: movie_id
+          in: path
+          description: Id of the movie associated with theater
+          type: integer
+          required: True
+        - name: theater
+          in: body
+          description: Theater to create
+          required: True
+          schema:
+            type: object
+            properties:
+              theater_name:
+                type: string
+                description: Name of the theater
+              theater_address:
+                type: string
+                description: City of the theater
+              theater_type:
+                type: string
+                description: Type of the theater
+      responses:
+        201:
+          description: Successfully created a note
+          schema:
+            properties:
+              movie_id:
+                type: integer
+                description: Id of the movie associated with the theater
+              theater_id:
+                type: integer
+                description: Id of the created theater
+              theater_name:
+                type: string
+                description: Name of the theater
+              theater_address:
+                type: string
+                description: City of the theater
+              theater_type:
+                type: string
+                description: Type of the theater
+
+  /movies/{movie_id}/theaters/{theater_id}:
+    get:
+      operationId: theater.read_one
+      tags:
+        - Theaters
+      summary: Read a particular theater associated with a movie
+      description: Read a particular theater associated with a movie
+      parameters:
+        - name: movie_id
+          in: path
+          description: Id of movie associated with theater
+          type: integer
+          required: True
+        - name: theater_id
+          in: path
+          description: Id of the theater
+          type: integer
+          required: True
+      responses:
+        200:
+          description: Successfully read
+          schema:
+            type: object
+            properties:
+              theater_id:
+                type: integer
+                description: Id of the theater
+              movie_id:
+                type: integer
+                description: Id of the movie associated with the theater
+              theater_name:
+                type: string
+                description: Name of the theater
+              theater_address:
+                type: string
+                description: City of the theater
+              theater_type:
+                type: string
+                description: Type of the theater
+
+    put:
+      operationId: theater.update
+      tags:
+        - Theaters
+      summary: Update a theater associated with a movie
+      description: Update a theater associated with a movie
+      parameters:
+        - name: movie_id
+          in: path
+          description: Id of the movie to update
+          type: integer
+          required: True
+        - name: theater_id
+          in: path
+          description: Id of the theater associated with a movie
+          type: integer
+          required: True
+        - name: theater
+          in: body
+          schema:
+            type: object
+            properties:
+              theater_name:
+                type: string
+                description: Name of the theater
+              theater_address:
+                type: string
+                description: City of the theater
+              theater_type:
+                type: string
+                description: Type of the theater
+      responses:
+        200:
+          description: Successfully updated the theater
+          schema:
+            properties:
+              theater_id:
+                type: string
+                description: Id of the theater associated with a movie
+              movie_id:
+                type: integer
+                description: Id of the movie
+              theater_name:
+                type: string
+                description: Name of the theater
+              theater_address:
+                type: string
+                description: City of the theater
+              theater_type:
+                type: string
+                description: Type of the theater
+
+    delete:
+      operationId: theater.delete
+      tags:
+        - Theaters
+      summary: Delete a theater associated with a movie
+      description: Delete a theater associated with a movie
+      parameters:
+        - name: movie_id
+          in: path
+          description: Id of the movie associated with the theater
+          type: integer
+          required: True
+        - name: theater_id
+          in: path
+          description: Id of the theater
+          type: integer
+          required: True
+      responses:
+        200:
+          description: Successfully deleted a theater
