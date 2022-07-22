@@ -1,6 +1,6 @@
 import os
 from config import db
-from models import Movie, Theater
+from models import Movie, Theater, Actor
 
 # Data to initialize database with
 MOVIE = [
@@ -12,6 +12,10 @@ MOVIE = [
             ("Regal", "Kandy", "3D"),
             ("Savoy", "Wellawatta", "5D"),
             ("CCC", "Colombo", "6D"),
+        ],
+        "actors": [
+            ("Reeves", "Kandy", 7),
+            ("John", "Colombo", 6),
         ],
     },
 ]
@@ -35,6 +39,16 @@ for movie in MOVIE:
                 theater_name=theater_name,
                 theater_address=theater_address,
                 theater_type=theater_type,
+            )
+        )
+
+    for actor in movie.get("actors"):
+        actor_name, actor_address, actor_rank = actor
+        content.actors.append(
+            Actor(
+                actor_name=actor_name,
+                actor_address=actor_address,
+                actor_rank=actor_rank,
             )
         )
     db.session.add(content)

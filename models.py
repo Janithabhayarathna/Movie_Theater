@@ -15,6 +15,12 @@ class Movie(db.Model):
         cascade="all, delete, delete-orphan",
     )
 
+    actors = db.relationship(
+        "Actor",
+        backref="movie",
+        cascade="all, delete, delete-orphan",
+    )
+
 
 class Theater(db.Model):
     __tablename__ = "theater"
@@ -23,6 +29,15 @@ class Theater(db.Model):
     theater_name = db.Column(db.String, nullable=False)
     theater_address = db.Column(db.String(32))
     theater_type = db.Column(db.String(32))
+
+
+class Actor(db.Model):
+    __tablename__ = "actor"
+    actor_id = db.Column(db.Integer, primary_key=True)
+    movie_id = db.Column(db.Integer, db.ForeignKey("movie.movie_id"))
+    actor_name = db.Column(db.String, nullable=False)
+    actor_address = db.Column(db.String(32))
+    actor_rank = db.Column(db.Integer)
 
 
 class MovieSchema(ma.ModelSchema):
@@ -37,10 +52,6 @@ class MovieSchema(ma.ModelSchema):
 
 
 class MovieTheaterSchema(ma.ModelSchema):
-    """
-    This class exists to get around a recursion issue
-    """
-
     def __init__(self, **kwargs):
         super().__init__(strict=True, **kwargs)
 
@@ -63,10 +74,27 @@ class TheaterSchema(ma.ModelSchema):
 
 
 class TheaterMovieSchema(ma.ModelSchema):
-    """
-    This class exists to get around a recursion issue
-    """
+    def __init__(self, **kwargs):
+        super().__init__(strict=True, **kwargs)
 
+    movie_id = fields.Int()
+    movie_name = fields.Str()
+    released_year = fields.Str()
+    movie_type = fields.Str()
+
+
+class ActorSchema(ma.ModelSchema):
+    def __init__(self, **kwargs):
+        super().__init__(strict=True, **kwargs)
+
+    class Meta:
+        model = Actor
+        sqla_session = db.session
+
+    movie = fields.Nested("ActorMovieSchema", default=None)
+
+
+class ActorMovieSchema(ma.ModelSchema):
     def __init__(self, **kwargs):
         super().__init__(strict=True, **kwargs)
 

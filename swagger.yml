@@ -409,3 +409,209 @@ paths:
       responses:
         200:
           description: Successfully deleted a theater
+
+  /actors:
+    get:
+      operationId: actor.read_all
+      tags:
+        - Actors
+      summary: Read the entire set of actors
+      description: Read the entire set of actors
+      responses:
+        200:
+          description: Successfully read actors
+          schema:
+            type: array
+            items:
+              properties:
+                actor_id:
+                  type: integer
+                  description: Id of the actor
+                actor_name:
+                  type: string
+                  description: Name of the actor
+                actor_address:
+                  type: string
+                  description: Living city of the actor
+                actor_rank:
+                  type: string
+                  description: Rank of the actor
+                movie:
+                  type: object
+                  properties:
+                    movie_id:
+                      type: integer
+                      description: Id of the movie that this actor is associated with
+                    movie_name:
+                      type: string
+                      description: Name of the movie
+                    released_year:
+                      type: string
+                      description: Released year of the movie
+                    movie_type:
+                      type: string
+                      description: Type of the movie
+
+
+    /movies/{movie_id}/actors:
+      post:
+        operationId: actor.create
+        tags:
+          - Actors
+        summary: Create a actor associated with a movie
+        description: Create a actor associated with a movie
+        parameters:
+          - name: movie_id
+            in: path
+            description: Id of the movie associated with the actor
+            type: integer
+            required: True
+          - name: actor
+            in: body
+            description: Actor to create
+            required: True
+            schema:
+              type: object
+              properties:
+                actor_name:
+                  type: string
+                  description: Name of the actor
+                actor_address:
+                  type: string
+                  description: Living city of the actor
+                actor_rank:
+                  type: string
+                  description: Rank of the actor
+        responses:
+          201:
+            description: Successfully created a actor
+            schema:
+              properties:
+                movie_id:
+                  type: integer
+                  description: Id of the movie associated with the actor
+                actor_id:
+                  type: integer
+                  description: Id of the created actor
+                actor_name:
+                  type: string
+                  description: Name of the actor
+                actor_address:
+                  type: string
+                  description: Living city of the actor
+                actor_rank:
+                  type: string
+                  description: Rank of the actor
+
+    /movies/{movie_id}/actors/{actor_id}:
+      get:
+        operationId: actor.read_one
+        tags:
+          - Actors
+        summary: Read a particular actor associated with a movie
+        description: Read a particular actor associated with a movie
+        parameters:
+          - name: movie_id
+            in: path
+            description: Id of movie associated with actor
+            type: integer
+            required: True
+          - name: actor_id
+            in: path
+            description: Id of the actor
+            type: integer
+            required: True
+        responses:
+          200:
+            description: Successfully read
+            schema:
+              type: object
+              properties:
+                actor_id:
+                  type: integer
+                  description: Id of the actor
+                movie_id:
+                  type: integer
+                  description: Id of the movie associated with the actor
+                actor_name:
+                  type: string
+                  description: Name of the actor
+                actor_address:
+                  type: string
+                  description: Living city of the actor
+                actor_rank:
+                  type: string
+                  description: Rank of the actor
+
+      put:
+        operationId: actor.update
+        tags:
+          - Actors
+        summary: Update a actor associated with a movie
+        description: Update a actor associated with a movie
+        parameters:
+          - name: movie_id
+            in: path
+            description: Id of the movie to update
+            type: integer
+            required: True
+          - name: actor_id
+            in: path
+            description: Id of the actor associated with a movie
+            type: integer
+            required: True
+          - name: actor
+            in: body
+            schema:
+              type: object
+              properties:
+                actor_name:
+                  type: string
+                  description: Name of the actor
+                actor_address:
+                  type: string
+                  description: Living city of the actor
+                actor_rank:
+                  type: string
+                  description: Rank of the actor
+        responses:
+          200:
+            description: Successfully updated the actor
+            schema:
+              properties:
+                actor_id:
+                  type: string
+                  description: Id of the actor associated with a movie
+                movie_id:
+                  type: integer
+                  description: Id of the movie
+                actor_name:
+                  type: string
+                  description: Name of the actor
+                actor_address:
+                  type: string
+                  description: Living city of the actor
+                actor_rank:
+                  type: string
+                  description: Rank of the actor
+
+      delete:
+        operationId: actor.delete
+        tags:
+          - Actors
+        summary: Delete an actor associated with a movie
+        description: Delete an actor associated with a movie
+        parameters:
+          - name: movie_id
+            in: path
+            description: Id of the movie associated with the actor
+            type: integer
+            required: True
+          - name: actor_id
+            in: path
+            description: Id of the actor
+            type: integer
+            required: True
+        responses:
+          200:
+            description: Successfully deleted the actor
