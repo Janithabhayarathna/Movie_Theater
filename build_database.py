@@ -61,7 +61,7 @@ for movie in MOVIE:
         content.directors.append(
             Director(
                 director_name=director_name,
-                actor_address=director_address,
+                director_address=director_address,
             )
         )
 
