@@ -2,7 +2,6 @@ import os
 from config import db
 from models import Movie, Theater, Actor, Director
 
-# Data to initialize database with
 MOVIE = [
     {
         "movie_name": "Last",
@@ -24,18 +23,14 @@ MOVIE = [
     },
 ]
 
-# Delete database file if it exists currently
 if os.path.exists("movie.db"):
     os.remove("movie.db")
 
-# Create the database
 db.create_all()
 
-# iterate over the PEOPLE structure and populate the database
 for movie in MOVIE:
     content = Movie(movie_name=movie.get("movie_name"), released_year=movie.get("released_year"), movie_type=movie.get("movie_type"))
 
-    # Add the notes for the person
     for theater in movie.get("theaters"):
         theater_name, theater_address, theater_type = theater
         content.theaters.append(
