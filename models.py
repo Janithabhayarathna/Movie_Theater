@@ -32,16 +32,16 @@ class Theater(db.Model):
     __tablename__ = "theater"
     theater_id = db.Column(db.Integer, primary_key=True)
     movie_id = db.Column(db.Integer, db.ForeignKey("movie.movie_id"))
-    theater_name = db.Column(db.String, nullable=False)
+    theater_name = db.Column(db.String)
     theater_address = db.Column(db.String(32))
-    theater_type = db.Column(db.String(32))
+    theater_type = db.Column(db.String(2))
 
 
 class Actor(db.Model):
     __tablename__ = "actor"
     actor_id = db.Column(db.Integer, primary_key=True)
     movie_id = db.Column(db.Integer, db.ForeignKey("movie.movie_id"))
-    actor_name = db.Column(db.String, nullable=False)
+    actor_name = db.Column(db.String)
     actor_address = db.Column(db.String(32))
     actor_rank = db.Column(db.Integer)
 
@@ -50,7 +50,7 @@ class Director(db.Model):
     __tablename__ = "director"
     director_id = db.Column(db.Integer, primary_key=True)
     movie_id = db.Column(db.Integer, db.ForeignKey("movie.movie_id"))
-    director_name = db.Column(db.String, nullable=False)
+    director_name = db.Column(db.String)
     director_address = db.Column(db.String(32))
 
 
