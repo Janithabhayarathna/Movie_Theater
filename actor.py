@@ -1,6 +1,6 @@
-from flask import make_response, abort
+from flask import make_response, abort, request
 from config import db
-from models import Movie, Actor, ActorSchema
+from models import Movie, Actor, ActorSchema, SearchMovieSchema
 
 
 def read_all():
@@ -9,6 +9,18 @@ def read_all():
     actor_schema = ActorSchema(many=True, exclude=["movie.actors"])
     data = actor_schema.dump(actors).data
     return data
+
+
+def read_all_movies():
+    actor_name = request.args.get("name", type=str)
+
+    if actor_name is not None:
+        actor = Actor.query.filter_by(actor_name=actor_name).all()
+        actor_schema = SearchMovieSchema(many=True)
+        return actor_schema.jsonify(actor)
+
+    else:
+        abort(404, "Actor name not found")
 
 
 def read_one(movie_id, actor_id):
@@ -46,7 +58,6 @@ def create(movie_id, actor):
 
 
 def update(movie_id, actor_id, actor):
-
     update_actor = (
         Actor.query.filter(Actor.movie_id == movie_id)
         .filter(Actor.actor_id == actor_id)
@@ -73,7 +84,6 @@ def update(movie_id, actor_id, actor):
 
 
 def delete(movie_id, actor_id):
-
     actor = (
         Actor.query.filter(Movie.movie_id == movie_id)
         .filter(Actor.actor_id == actor_id)

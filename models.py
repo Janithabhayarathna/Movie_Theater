@@ -160,3 +160,18 @@ class DirectorMovieSchema(ma.ModelSchema):
     movie_name = fields.Str()
     released_year = fields.Str()
     movie_type = fields.Str()
+
+
+class SearchMovieSchema(ma.ModelSchema):
+    def __init__(self, **kwargs):
+        super().__init__(strict=True, **kwargs)
+
+    movie = fields.Nested("MovieSearchSchema", default=None)
+
+
+class MovieSearchSchema(ma.ModelSchema):
+    def __init__(self, **kwargs):
+        super().__init__(strict=True, **kwargs)
+
+    movie_name = fields.Str()
+

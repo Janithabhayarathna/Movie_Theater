@@ -452,6 +452,27 @@ paths:
                       type: string
                       description: Type of the movie
 
+  /actors/movies:
+    get:
+      operationId: actor.read_all_movies
+      tags:
+        - Actors
+      summary: Read the entire set of Movies relevant to an actor
+      description: Read the entire set of Movies relevant to an actor
+      responses:
+        200:
+          description: Successfully read the movies
+          schema:
+            type: array
+            items:
+              properties:
+                movie:
+                  type: object
+                  properties:
+                    movie_name:
+                      type: string
+                      description: Name of the movie
+
 
   /movies/{movie_id}/actors:
     post:
@@ -654,6 +675,27 @@ paths:
                     movie_type:
                       type: string
                       description: Type of the movie
+
+  /directors/movies:
+    get:
+      operationId: director.read_all_movies
+      tags:
+        - Directors
+      summary: Read the entire set of Movies relevant to a director
+      description: Read the entire set of Movies relevant to a director
+      responses:
+        200:
+          description: Successfully read the movies
+          schema:
+            type: array
+            items:
+              properties:
+                movie:
+                  type: object
+                  properties:
+                    movie_name:
+                      type: string
+                      description: Name of the movie
 
 
   /movies/{movie_id}/directors:
