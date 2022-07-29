@@ -4,30 +4,16 @@ from models import Movie, Actor, ActorSchema, SearchMovieSchema
 
 
 def read_all():
-    actors = Actor.query.order_by(db.desc(Actor.actor_name)).all()
+    actors = Actor.query.order_by(db.desc(Actor.actor_id)).all()
 
-    actor_schema = ActorSchema(many=True, exclude=["movie.actors"])
+    actor_schema = ActorSchema(many=True)
     data = actor_schema.dump(actors).data
     return data
 
 
-def read_all_movies():
-    actor_name = request.args.get("name", type=str)
-
-    if actor_name is not None:
-        actor = Actor.query.filter_by(actor_name=actor_name).all()
-        actor_schema = SearchMovieSchema(many=True)
-        return actor_schema.jsonify(actor)
-
-    else:
-        abort(404, "Actor name not found")
-
-
-def read_one(movie_id, actor_id):
+def read_one(actor_id):
     actors = (
-        Actor.query.join(Movie, Movie.movie_id == Actor.movie_id)
-        .filter(Actor.movie_id == movie_id)
-        .filter(Actor.actor_id == actor_id)
+        Actor.query.filter(Actor.actor_id == actor_id)
         .one_or_none()
     )
 
@@ -57,10 +43,25 @@ def create(movie_id, actor):
     return data, 201
 
 
-def update(movie_id, actor_id, actor):
+def add_existing(movie_id, actor_id):
+    movie = Movie.query.filter(Movie.movie_id == movie_id).one_or_none()
+    actors = Actor.query.filter(Actor.actor_id == actor_id).one_or_none()
+
+    if movie is None:
+        abort(404, f"Movie not found for Id: {movie_id}")
+
+    elif actors is None:
+        abort(404, f"Actor not found for Id: {actor_id}")
+
+    movie.actors.append(actors)
+    db.session.commit()
+
+    return 201
+
+
+def update(actor_id, actor):
     update_actor = (
-        Actor.query.filter(Actor.movie_id == movie_id)
-        .filter(Actor.actor_id == actor_id)
+        Actor.query.filter(Actor.actor_id == actor_id)
         .one_or_none()
     )
 
@@ -83,10 +84,9 @@ def update(movie_id, actor_id, actor):
         abort(404, f"Actor not found for Id: {actor_id}")
 
 
-def delete(movie_id, actor_id):
+def delete(actor_id):
     actor = (
-        Actor.query.filter(Movie.movie_id == movie_id)
-        .filter(Actor.actor_id == actor_id)
+        Actor.query.filter(Actor.actor_id == actor_id)
         .one_or_none()
     )
 

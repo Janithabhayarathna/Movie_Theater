@@ -5,9 +5,9 @@ from models import Movie, Director, DirectorSchema, SearchMovieSchema
 
 def read_all():
 
-    directors = Director.query.order_by(db.desc(Director.director_name)).all()
+    directors = Director.query.order_by(db.desc(Director.director_id)).all()
 
-    director_schema = DirectorSchema(many=True, exclude=["movie.directors"])
+    director_schema = DirectorSchema(many=True)
     data = director_schema.dump(directors).data
     return data
 
@@ -25,12 +25,10 @@ def read_all_movies():
         abort(404, "Director name not found")
 
 
-def read_one(movie_id, director_id):
+def read_one(director_id):
 
     director = (
-        Director.query.join(Movie, Movie.movie_id == Director.movie_id)
-        .filter(Director.movie_id == movie_id)
-        .filter(Director.director_id == director_id)
+        Director.query.filter(Director.director_id == director_id)
         .one_or_none()
     )
 
@@ -61,11 +59,26 @@ def create(movie_id, director):
     return data, 201
 
 
-def update(movie_id, director_id, director):
+def add_existing(movie_id, director_id):
+    movie = Movie.query.filter(Movie.movie_id == movie_id).one_or_none()
+    director = Director.query.filter(Director.director_id == director_id).one_or_none()
+
+    if movie is None:
+        abort(404, f"Movie not found for Id: {movie_id}")
+
+    elif director is None:
+        abort(404, f"Director not found for Id: {director_id}")
+
+    movie.directors.append(director)
+    db.session.commit()
+
+    return 201
+
+
+def update(director_id, director):
 
     update_director = (
-        Director.query.filter(Director.movie_id == movie_id)
-        .filter(Director.director_id == director_id)
+        Director.query.filter(Director.director_id == director_id)
         .one_or_none()
     )
 
@@ -74,7 +87,6 @@ def update(movie_id, director_id, director):
         schema = DirectorSchema()
         update = schema.load(director, session=db.session).data
 
-        update.movie_id = update_director.movie_id
         update.actor_id = update_director.director_id
 
         db.session.merge(update)
@@ -88,11 +100,10 @@ def update(movie_id, director_id, director):
         abort(404, f"Director not found for Id: {director_id}")
 
 
-def delete(movie_id, director_id):
+def delete(director_id):
 
     director = (
-        Director.query.filter(Movie.movie_id == movie_id)
-        .filter(Director.director_id == director_id)
+        Director.query.filter(Director.director_id == director_id)
         .one_or_none()
     )
 

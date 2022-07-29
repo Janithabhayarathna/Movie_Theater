@@ -10,7 +10,6 @@ produces:
 
 basePath: /api
 
-# Paths supported by the server application
 paths:
   /movies:
     get:
@@ -38,22 +37,22 @@ paths:
                 movie_type:
                   type: string
                   description: Type of the movie
-                notes:
+                theaters:
                   type: array
                   items:
                     properties:
-                      movie_id:
+                      theater_id:
                         type: integer
-                        description: Id of the movie
-                      movie_name:
+                        description: Id of the theater
+                      theater_name:
                         type: string
-                        description: Movie name
-                      released_year:
+                        description: Theater name
+                      theater_address:
                         type: string
-                        description: Released year of the movie
-                      movie_type:
+                        description: Address of the theater
+                      theater_type:
                         type: string
-                        description: Type of the movie
+                        description: Type of the theater
 
     post:
       operationId: movie.create
@@ -235,7 +234,7 @@ paths:
                   properties:
                     movie_id:
                       type: integer
-                      description: Id of the movie that this theater is associated with
+                      description: Id of the movie that this theater is associated with the theater
                     movie_name:
                       type: string
                       description: Name of the movie
@@ -298,18 +297,43 @@ paths:
                 description: Type of the theater
 
   /movies/{movie_id}/theaters/{theater_id}:
+    put:
+      operationId: theater.add_existing
+      tags:
+        - Theaters
+      summary: Add an existing theater to a movie
+      description: Add an existing theater to a movie
+      parameters:
+        - name: movie_id
+          in: path
+          description: Id of the movie needed to link with a theater
+          type: integer
+          required: True
+        - name: theater_id
+          in: path
+          description: Id of the theater needed to link with a movie
+          type: integer
+          required: True
+      responses:
+        200:
+          description: Successfully linked the theater
+          schema:
+            properties:
+              movie_id:
+                type: integer
+                description: Id of the theater associated with a movie
+              theater_id:
+                type: integer
+                description: Id of the movie
+
+  /theaters/{theater_id}:
     get:
       operationId: theater.read_one
       tags:
         - Theaters
-      summary: Read a particular theater associated with a movie
-      description: Read a particular theater associated with a movie
+      summary: Read a particular theater
+      description: Read a particular theater
       parameters:
-        - name: movie_id
-          in: path
-          description: Id of movie associated with theater
-          type: integer
-          required: True
         - name: theater_id
           in: path
           description: Id of the theater
@@ -317,7 +341,7 @@ paths:
           required: True
       responses:
         200:
-          description: Successfully read
+          description: Successfully read the theater
           schema:
             type: object
             properties:
@@ -341,14 +365,9 @@ paths:
       operationId: theater.update
       tags:
         - Theaters
-      summary: Update a theater associated with a movie
-      description: Update a theater associated with a movie
+      summary: Update a theater
+      description: Update a theater
       parameters:
-        - name: movie_id
-          in: path
-          description: Id of the movie to update
-          type: integer
-          required: True
         - name: theater_id
           in: path
           description: Id of the theater associated with a movie
@@ -393,14 +412,9 @@ paths:
       operationId: theater.delete
       tags:
         - Theaters
-      summary: Delete a theater associated with a movie
-      description: Delete a theater associated with a movie
+      summary: Delete a theater
+      description: Delete a theater
       parameters:
-        - name: movie_id
-          in: path
-          description: Id of the movie associated with the theater
-          type: integer
-          required: True
         - name: theater_id
           in: path
           description: Id of the theater
@@ -451,27 +465,6 @@ paths:
                     movie_type:
                       type: string
                       description: Type of the movie
-
-  /actors/movies:
-    get:
-      operationId: actor.read_all_movies
-      tags:
-        - Actors
-      summary: Read the entire set of Movies relevant to an actor
-      description: Read the entire set of Movies relevant to an actor
-      responses:
-        200:
-          description: Successfully read the movies
-          schema:
-            type: array
-            items:
-              properties:
-                movie:
-                  type: object
-                  properties:
-                    movie_name:
-                      type: string
-                      description: Name of the movie
 
 
   /movies/{movie_id}/actors:
@@ -525,6 +518,36 @@ paths:
                 description: Rank of the actor
 
   /movies/{movie_id}/actors/{actor_id}:
+    put:
+      operationId: actor.add_existing
+      tags:
+        - Actors
+      summary: Add an existing actor to a movie
+      description: Add an existing actor to a movie
+      parameters:
+        - name: movie_id
+          in: path
+          description: Id of the movie needed to link with a theater
+          type: integer
+          required: True
+        - name: actor_id
+          in: path
+          description: Id of the actor needed to link with a movie
+          type: integer
+          required: True
+      responses:
+        200:
+          description: Successfully linked the actor
+          schema:
+            properties:
+              movie_id:
+                type: integer
+                description: Id of the actor associated with a movie
+              theater_id:
+                type: integer
+                description: Id of the movie
+
+  /actors/{actor_id}:
     get:
       operationId: actor.read_one
       tags:
@@ -532,11 +555,6 @@ paths:
       summary: Read a particular actor associated with a movie
       description: Read a particular actor associated with a movie
       parameters:
-        - name: movie_id
-          in: path
-          description: Id of movie associated with actor
-          type: integer
-          required: True
         - name: actor_id
           in: path
           description: Id of the actor
@@ -571,11 +589,6 @@ paths:
       summary: Update a actor associated with a movie
       description: Update a actor associated with a movie
       parameters:
-        - name: movie_id
-          in: path
-          description: Id of the movie to update
-          type: integer
-          required: True
         - name: actor_id
           in: path
           description: Id of the actor associated with a movie
@@ -623,11 +636,6 @@ paths:
       summary: Delete an actor associated with a movie
       description: Delete an actor associated with a movie
       parameters:
-        - name: movie_id
-          in: path
-          description: Id of the movie associated with the actor
-          type: integer
-          required: True
         - name: actor_id
           in: path
           description: Id of the actor
@@ -676,27 +684,6 @@ paths:
                       type: string
                       description: Type of the movie
 
-  /directors/movies:
-    get:
-      operationId: director.read_all_movies
-      tags:
-        - Directors
-      summary: Read the entire set of Movies relevant to a director
-      description: Read the entire set of Movies relevant to a director
-      responses:
-        200:
-          description: Successfully read the movies
-          schema:
-            type: array
-            items:
-              properties:
-                movie:
-                  type: object
-                  properties:
-                    movie_name:
-                      type: string
-                      description: Name of the movie
-
 
   /movies/{movie_id}/directors:
     post:
@@ -742,7 +729,7 @@ paths:
                 type: string
                 description: Living city of the director
 
-  /movies/{movie_id}/directors/{director_id}:
+  /directors/{director_id}:
     get:
       operationId: director.read_one
       tags:
@@ -750,11 +737,6 @@ paths:
       summary: Read a particular director associated with a movie
       description: Read a particular director associated with a movie
       parameters:
-        - name: movie_id
-          in: path
-          description: Id of movie associated with the director
-          type: integer
-          required: True
         - name: director_id
           in: path
           description: Id of the director
@@ -786,11 +768,6 @@ paths:
       summary: Update a director associated with a movie
       description: Update a director associated with a movie
       parameters:
-        - name: movie_id
-          in: path
-          description: Id of the movie to update
-          type: integer
-          required: True
         - name: director_id
           in: path
           description: Id of the director associated with a movie
@@ -801,9 +778,6 @@ paths:
           schema:
             type: object
             properties:
-              director_id:
-                type: integer
-                description: Id of the created director
               director_name:
                 type: string
                 description: Name of the director
@@ -835,11 +809,6 @@ paths:
       summary: Delete an director associated with a movie
       description: Delete an director associated with a movie
       parameters:
-        - name: movie_id
-          in: path
-          description: Id of the movie associated with the director
-          type: integer
-          required: True
         - name: director_id
           in: path
           description: Id of the director
@@ -849,3 +818,32 @@ paths:
         200:
           description: Successfully deleted the director
 
+  /movies/{movie_id}/directors/{director_id}:
+    put:
+      operationId: director.add_existing
+      tags:
+        - Directors
+      summary: Add an existing director to a movie
+      description: Add an existing director to a movie
+      parameters:
+        - name: movie_id
+          in: path
+          description: Id of the movie needed to link with a theater
+          type: integer
+          required: True
+        - name: director_id
+          in: path
+          description: Id of the director needed to link with a movie
+          type: integer
+          required: True
+      responses:
+        200:
+          description: Successfully linked the director
+          schema:
+            properties:
+              movie_id:
+                type: integer
+                description: Id of the theater associated with a movie
+              director_id:
+                type: integer
+                description: Id of the director

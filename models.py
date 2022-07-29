@@ -1,57 +1,78 @@
 from config import db, ma
 from marshmallow import fields
+from datetime import datetime
 
 
 class Movie(db.Model):
     __tablename__ = "movie"
     movie_id = db.Column(db.Integer, primary_key=True)
-    movie_name = db.Column(db.String(32))
+    movie_name = db.Column(db.String(32), nullable=False, unique=True)
     released_year = db.Column(db.String(4))
     movie_type = db.Column(db.String(12))
 
     theaters = db.relationship(
         "Theater",
-        backref="movie",
-        cascade="all, delete, delete-orphan",
+        secondary='movie_theater'
     )
 
     actors = db.relationship(
         "Actor",
-        backref="movie",
-        cascade="all, delete, delete-orphan",
+        secondary='movie_actor'
     )
 
     directors = db.relationship(
         "Director",
-        backref="movie",
-        cascade="all, delete, delete-orphan",
+        secondary='movie_director'
     )
 
 
 class Theater(db.Model):
     __tablename__ = "theater"
     theater_id = db.Column(db.Integer, primary_key=True)
-    movie_id = db.Column(db.Integer, db.ForeignKey("movie.movie_id"))
-    theater_name = db.Column(db.String)
+    theater_name = db.Column(db.String(32), nullable=False)
     theater_address = db.Column(db.String(32))
     theater_type = db.Column(db.String(2))
+    movies = db.relationship(Movie, secondary='movie_theater')
+
+
+class MovieTheater(db.Model):
+    __tablename__ = "movie_theater"
+    movie_id = db.Column(db.Integer, db.ForeignKey("movie.movie_id"), primary_key=True)
+    theater_id = db.Column(db.Integer, db.ForeignKey("theater.theater_id"), primary_key=True)
+    # show_time = db.Column(db.DateTime, default=datetime.utcnow)
 
 
 class Actor(db.Model):
     __tablename__ = "actor"
     actor_id = db.Column(db.Integer, primary_key=True)
     movie_id = db.Column(db.Integer, db.ForeignKey("movie.movie_id"))
-    actor_name = db.Column(db.String)
+    actor_name = db.Column(db.String(32), nullable=False)
     actor_address = db.Column(db.String(32))
-    actor_rank = db.Column(db.Integer)
+    actor_rank = db.Column(db.String(2))
+
+    movies = db.relationship(Movie, secondary='movie_actor')
+
+
+class MovieActor(db.Model):
+    __tablename__ = "movie_actor"
+    movie_id = db.Column(db.Integer, db.ForeignKey("movie.movie_id"), primary_key=True)
+    actor_id = db.Column(db.Integer, db.ForeignKey("actor.actor_id"), primary_key=True)
 
 
 class Director(db.Model):
     __tablename__ = "director"
     director_id = db.Column(db.Integer, primary_key=True)
     movie_id = db.Column(db.Integer, db.ForeignKey("movie.movie_id"))
-    director_name = db.Column(db.String)
+    director_name = db.Column(db.String(32), nullable=False)
     director_address = db.Column(db.String(32))
+
+    movies = db.relationship(Movie, secondary='movie_director')
+
+
+class MovieDirector(db.Model):
+    __tablename__ = "movie_director"
+    movie_id = db.Column(db.Integer, db.ForeignKey("movie.movie_id"), primary_key=True)
+    director_id = db.Column(db.Integer, db.ForeignKey("director.director_id"), primary_key=True)
 
 
 class MovieSchema(ma.ModelSchema):
@@ -86,7 +107,7 @@ class TheaterSchema(ma.ModelSchema):
         model = Theater
         sqla_session = db.session
 
-    movie = fields.Nested("TheaterMovieSchema", default=None)
+    # movie = fields.Nested("TheaterMovieSchema", default=None)
 
 
 class TheaterMovieSchema(ma.ModelSchema):
@@ -107,7 +128,7 @@ class ActorSchema(ma.ModelSchema):
         model = Actor
         sqla_session = db.session
 
-    movie = fields.Nested("ActorMovieSchema", default=None)
+    # movie = fields.Nested("ActorMovieSchema", default=None)
 
 
 class MovieActorSchema(ma.ModelSchema):
@@ -139,7 +160,7 @@ class DirectorSchema(ma.ModelSchema):
         model = Director
         sqla_session = db.session
 
-    movie = fields.Nested("DirectorMovieSchema", default=None)
+    # movie = fields.Nested("DirectorMovieSchema", default=None)
 
 
 class MovieDirectorSchema(ma.ModelSchema):
@@ -167,11 +188,3 @@ class SearchMovieSchema(ma.ModelSchema):
         super().__init__(strict=True, **kwargs)
 
     movie = fields.Nested("MovieSearchSchema", default=None)
-
-
-class MovieSearchSchema(ma.ModelSchema):
-    def __init__(self, **kwargs):
-        super().__init__(strict=True, **kwargs)
-
-    movie_name = fields.Str()
-

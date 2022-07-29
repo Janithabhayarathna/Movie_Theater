@@ -1,6 +1,6 @@
 from flask import make_response, abort
 from config import db
-from models import Movie, MovieSchema, Theater
+from models import Movie, MovieSchema
 
 
 def read_all():
@@ -16,7 +16,6 @@ def read_one(movie_id):
 
     movie = (
         Movie.query.filter(Movie.movie_id == movie_id)
-        .outerjoin(Theater)
         .one_or_none()
     )
 
