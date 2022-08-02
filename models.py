@@ -3,6 +3,13 @@ from marshmallow import fields
 from datetime import datetime
 
 
+class MovieTheater(db.Model):
+    __tablename__ = "movie_theater"
+    movie_id = db.Column(db.Integer, db.ForeignKey("movie.movie_id"), primary_key=True)
+    theater_id = db.Column(db.Integer, db.ForeignKey("theater.theater_id"), primary_key=True)
+    showtime = db.Column(db.DateTime, default=datetime.utcnow, primary_key=True)
+
+
 class Movie(db.Model):
     __tablename__ = "movie"
     movie_id = db.Column(db.Integer, primary_key=True)
@@ -32,20 +39,13 @@ class Theater(db.Model):
     theater_name = db.Column(db.String(32), nullable=False)
     theater_address = db.Column(db.String(32))
     theater_type = db.Column(db.String(2))
+
     movies = db.relationship(Movie, secondary='movie_theater')
-
-
-class MovieTheater(db.Model):
-    __tablename__ = "movie_theater"
-    movie_id = db.Column(db.Integer, db.ForeignKey("movie.movie_id"), primary_key=True)
-    theater_id = db.Column(db.Integer, db.ForeignKey("theater.theater_id"), primary_key=True)
-    # show_time = db.Column(db.DateTime, default=datetime.utcnow)
 
 
 class Actor(db.Model):
     __tablename__ = "actor"
     actor_id = db.Column(db.Integer, primary_key=True)
-    movie_id = db.Column(db.Integer, db.ForeignKey("movie.movie_id"))
     actor_name = db.Column(db.String(32), nullable=False)
     actor_address = db.Column(db.String(32))
     actor_rank = db.Column(db.String(2))
@@ -62,7 +62,6 @@ class MovieActor(db.Model):
 class Director(db.Model):
     __tablename__ = "director"
     director_id = db.Column(db.Integer, primary_key=True)
-    movie_id = db.Column(db.Integer, db.ForeignKey("movie.movie_id"))
     director_name = db.Column(db.String(32), nullable=False)
     director_address = db.Column(db.String(32))
 
@@ -107,7 +106,16 @@ class TheaterSchema(ma.ModelSchema):
         model = Theater
         sqla_session = db.session
 
-    # movie = fields.Nested("TheaterMovieSchema", default=None)
+
+class TheaterShowSchema(ma.ModelSchema):
+    def __init__(self, **kwargs):
+        super().__init__(strict=True, **kwargs)
+
+    class Meta:
+        model = Theater
+        sqla_session = db.session
+
+    show_time = fields.Str()
 
 
 class TheaterMovieSchema(ma.ModelSchema):
@@ -127,8 +135,6 @@ class ActorSchema(ma.ModelSchema):
     class Meta:
         model = Actor
         sqla_session = db.session
-
-    # movie = fields.Nested("ActorMovieSchema", default=None)
 
 
 class MovieActorSchema(ma.ModelSchema):
@@ -160,8 +166,6 @@ class DirectorSchema(ma.ModelSchema):
         model = Director
         sqla_session = db.session
 
-    # movie = fields.Nested("DirectorMovieSchema", default=None)
-
 
 class MovieDirectorSchema(ma.ModelSchema):
     def __init__(self, **kwargs):
@@ -183,8 +187,10 @@ class DirectorMovieSchema(ma.ModelSchema):
     movie_type = fields.Str()
 
 
-class SearchMovieSchema(ma.ModelSchema):
+class ShowtimeSchema(ma.ModelSchema):
     def __init__(self, **kwargs):
         super().__init__(strict=True, **kwargs)
 
-    movie = fields.Nested("MovieSearchSchema", default=None)
+    class Meta:
+        model = MovieTheater
+        sqla_session = db.session

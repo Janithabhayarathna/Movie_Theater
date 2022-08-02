@@ -1,14 +1,21 @@
 from flask import make_response, abort, request
 from config import db
-from models import Movie, Actor, ActorSchema, SearchMovieSchema
+from models import Movie, Actor, ActorSchema, MovieActor
 
 
 def read_all():
-    actors = Actor.query.order_by(db.desc(Actor.actor_id)).all()
+    actor_name = request.args.get("name", type=str)
 
-    actor_schema = ActorSchema(many=True)
-    data = actor_schema.dump(actors).data
-    return data
+    if actor_name is not None:
+        return db.session.query(Movie.movie_name).join(MovieActor).join(Actor).filter(
+            Actor.actor_name_name == actor_name).all()
+
+    else:
+        actors = Actor.query.order_by(db.desc(Actor.actor_id)).all()
+
+        actor_schema = ActorSchema(many=True)
+        data = actor_schema.dump(actors).data
+        return data
 
 
 def read_one(actor_id):

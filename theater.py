@@ -1,14 +1,21 @@
-from flask import make_response, abort
+from flask import make_response, abort, request
 from config import db
-from models import Movie, Theater, TheaterSchema
+from models import Movie, Theater, TheaterSchema, TheaterShowSchema, MovieTheater
 
 
 def read_all():
-    theaters = Theater.query.order_by(db.desc(Theater.theater_id)).all()
+    theater_name = request.args.get("name", type=str)
 
-    theater_schema = TheaterSchema(many=True)
-    data = theater_schema.dump(theaters).data
-    return data
+    if theater_name is not None:
+        return db.session.query(Movie.movie_name).join(MovieTheater).join(Theater).filter(
+            Theater.theater_name == theater_name).all()
+
+    else:
+        theaters = Theater.query.order_by(db.desc(Theater.theater_id)).all()
+
+        theater_schema = TheaterSchema(many=True)
+        data = theater_schema.dump(theaters).data
+        return data
 
 
 def read_one(theater_id):
@@ -32,13 +39,13 @@ def create(movie_id, theater):
     if movie is None:
         abort(404, f"Movie not found for Id: {movie_id}")
 
-    schema = TheaterSchema()
-    new_theater = schema.load(theater, session=db.session).data
+    schema = TheaterShowSchema()
+    new_theater_data = schema.load(theater, session=db.session).data
 
-    movie.theaters.append(new_theater)
+    movie.theaters.append(new_theater_data)
     db.session.commit()
 
-    data = schema.dump(new_theater).data
+    data = schema.dump(new_theater_data).data
 
     return data, 201
 

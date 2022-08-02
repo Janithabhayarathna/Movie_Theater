@@ -1,28 +1,22 @@
 from flask import make_response, abort, request
 from config import db
-from models import Movie, Director, DirectorSchema, SearchMovieSchema
+from models import Movie, Director, DirectorSchema, MovieDirector
 
 
 def read_all():
 
-    directors = Director.query.order_by(db.desc(Director.director_id)).all()
-
-    director_schema = DirectorSchema(many=True)
-    data = director_schema.dump(directors).data
-    return data
-
-
-def read_all_movies():
-
     director_name = request.args.get("name", type=str)
 
     if director_name is not None:
-        director = Director.query.filter_by(director_name=director_name).all()
-        director_schema = SearchMovieSchema(many=True)
-        return director_schema.jsonify(director)
+        return db.session.query(Movie.movie_name).join(MovieDirector).join(Director).filter(
+            Director.director_name == director_name).all()
 
     else:
-        abort(404, "Director name not found")
+        directors = Director.query.order_by(db.desc(Director.director_id)).all()
+
+        director_schema = DirectorSchema(many=True)
+        data = director_schema.dump(directors).data
+        return data
 
 
 def read_one(director_id):
