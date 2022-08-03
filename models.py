@@ -191,6 +191,6 @@ class ShowtimeSchema(ma.ModelSchema):
     def __init__(self, **kwargs):
         super().__init__(strict=True, **kwargs)
 
-    class Meta:
-        model = MovieTheater
-        sqla_session = db.session
+    movie_id = fields.Int()
+    theater_id = fields.Int()
+    showtime = fields.DateTime()

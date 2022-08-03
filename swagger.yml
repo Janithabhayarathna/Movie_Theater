@@ -326,42 +326,6 @@ paths:
                 type: integer
                 description: Id of the movie
 
-  /showtime:
-    post:
-      operationId: movie.showtime
-      tags:
-        - Movies
-      summary: Add the showtime
-      description: Add the showtime
-      parameters:
-        - name: time
-          in: body
-          description: showtime
-          required: True
-          schema:
-            type: object
-            properties:
-              movie_id:
-                type: integer
-                description: movie id
-              theater_id:
-                type: integer
-                description: theater id
-              showtime:
-                type: string
-                description: showtime of the movie
-      responses:
-        201:
-          description: Successfully added the showtime
-          schema:
-            properties:
-              movie_id:
-                type: integer
-                description: Id of the movie
-              theater_id:
-                type: integer
-                description: Id of the theater
-
   /theaters/{theater_id}:
     get:
       operationId: theater.read_one
@@ -883,3 +847,54 @@ paths:
               director_id:
                 type: integer
                 description: Id of the director
+
+  /showtime:
+    post:
+      operationId: movie.showtime
+      tags:
+        - Showtime
+      summary: Add showtime
+      description: Add showtime
+      parameters:
+        - name: time
+          in: body
+          description: showtime
+          required: True
+          schema:
+            type: object
+            properties:
+              movie_id:
+                type: integer
+                description: movie id
+              theater_id:
+                type: integer
+                description: theater id
+              showtime:
+                type: string
+                description: showtime of the movie
+      responses:
+        201:
+          description: Successfully added the showtime
+
+    get:
+      operationId: movie.get_all
+      tags:
+        - Showtime
+      summary: Read the showtime Info
+      description: Read the showtime Info
+      responses:
+        200:
+          description: Successfully read the entire set of  data
+          schema:
+            type: array
+            items:
+              properties:
+                movie_id:
+                  type: integer
+                  description: Id of the movie
+                showtime:
+                  type: string
+                  description: showtime of the movie
+                theater_id:
+                  type: integer
+                  description: Id of the theater
