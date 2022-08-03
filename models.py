@@ -191,6 +191,5 @@ class ShowtimeSchema(ma.ModelSchema):
     def __init__(self, **kwargs):
         super().__init__(strict=True, **kwargs)
 
-    movie_id = fields.Int()
     theater_id = fields.Int()
     showtime = fields.DateTime()

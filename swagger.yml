@@ -876,15 +876,22 @@ paths:
         201:
           description: Successfully added the showtime
 
+  /showtime/{movie_id}:
     get:
-      operationId: movie.get_all
+      operationId: movie.get_showtime
       tags:
         - Showtime
-      summary: Read the showtime Info
-      description: Read the showtime Info
+      summary: Read the showtime of a specific movie
+      description: Read the showtime of a specific movie
+      parameters:
+        - name: movie_id
+          in: path
+          description: Id of the movie needed to link with a theater
+          type: integer
+          required: True
       responses:
         200:
-          description: Successfully read the entire set of  data
+          description: Successfully read the data
           schema:
             type: array
             items:
@@ -895,6 +902,3 @@ paths:
                 showtime:
                   type: string
                   description: showtime of the movie
-                theater_id:
-                  type: integer
-                  description: Id of the theater

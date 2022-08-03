@@ -1,18 +1,7 @@
 from flask import make_response, abort
 from config import db
-from models import Movie, Theater, MovieTheater, MovieSchema, ShowtimeSchema
+from models import Movie, MovieTheater, MovieSchema, ShowtimeSchema
 from datetime import datetime
-
-
-def get_all():
-
-# content = db.session.query(Movie.movie_name, Theater.theater_name, MovieTheater.showtime).join(MovieTheater).join(
-# Movie).join(Theater).all()
-
-    content = MovieTheater.query.all()
-    schema = ShowtimeSchema(many=True)
-    data = schema.dump(content).data
-    return data
 
 
 def read_all():
@@ -103,7 +92,6 @@ def delete(movie_id):
 
 
 def showtime(time):
-
     movie_id = time.get("movie_id")
     theater_id = time.get("theater_id")
     showtime_str = time.get("showtime")
@@ -114,3 +102,10 @@ def showtime(time):
     db.session.add(content)
     db.session.commit()
     return 201
+
+
+def get_showtime(movie_id):
+    content = MovieTheater.query.filter(MovieTheater.movie_id == movie_id).all()
+    schema = ShowtimeSchema(many=True)
+    data = schema.dump(content).data
+    return data

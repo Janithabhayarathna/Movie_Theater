@@ -8,17 +8,10 @@ MOVIE = [
         "released_year": "2021",
         "movie_type": "Drama",
         "theaters": [
-            ("Regal", "Kandy", "3D"),
-            ("Savoy", "Wellawatta", "5D"),
-            ("CCC", "Colombo", "6D"),
         ],
         "actors": [
-            ("Reeves", "Kandy", 7),
-            ("John", "Colombo", 6),
         ],
         "directors": [
-            ("Jason", "Colombo"),
-            ("Kamal", "Rathnapura"),
         ],
     },
 ]
